@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Management</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --bg-color: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-dark: #1e293b;
+        --text-light: #64748b;
+        --error: #ef4444;
+        --success: #10b981;
+        --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: var(--bg-color);
+        margin: 0;
+        padding: 40px 20px;
+        color: var(--text-dark);
+        display: flex;
+        justify-content: center;
+        min-height: 100vh;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 800px;
+        background: var(--card-bg);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    header { text-align: center; margin-bottom: 30px; }
+    h2 { margin: 0; font-weight: 600; }
+    p.subtitle { color: var(--text-light); font-size: 0.9rem; margin-top: 5px; }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; }
+
+    label {
+        font-weight: 500;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-family: inherit;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    input:focus { border-color: var(--primary); }
+    input.error { border-color: var(--error); background-color: #fff5f5; }
+
+    .error-text { color: var(--error); font-size: 0.75rem; margin-top: 4px; min-height: 18px; }
+
+    /* Buttons */
+    .btn-group { margin-top: 10px; display: flex; gap: 15px; }
+
+    button {
+        flex: 1;
+        padding: 12px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 8px;
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.2s;
+    }
+
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-secondary { background: white; border: 2px solid var(--border); color: var(--secondary); }
+    .btn-secondary:hover { background: #f8fafc; border-color: var(--secondary); color: var(--text-dark); }
+
+    /* Success Message */
+    #successMsg {
+        display: none;
+        background-color: #ecfdf5;
+        color: var(--success);
+        border: 1px solid #a7f3d0;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 15px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    /* Table */
+    .table-wrapper {
+        margin-top: 30px;
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead { background: #f8fafc; }
+    
+    th {
+        text-align: left; padding: 15px; font-weight: 600; color: var(--secondary);
+        text-transform: uppercase; font-size: 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    
+    td { padding: 15px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background-color: #f8fafc; }
+
+    .empty-state {
+        text-align: center; padding: 20px; color: var(--text-light); font-style: italic; display: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2><i class="fa-solid fa-users-gear"></i> Employee Management</h2>
+        <p class="subtitle">Add details below. Click refresh to view updates.</p>
+    </header>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Employee ID</label>
+            <input type="text" id="empId" placeholder="e.g. 101">
+            <div id="errId" class="error-text"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="empName" placeholder="e.g. John Doe">
+            <div id="errName" class="error-text"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Department</label>
+            <input type="text" id="empDept" placeholder="e.g. IT, HR">
+            <div id="errDept" class="error-text"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Salary (Rs)</label>
+            <input type="text" id="empSalary" placeholder="e.g. 50000">
+            <div id="errSalary" class="error-text"></div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn-primary" onclick="saveEmployee()">
+            <i class="fa-solid fa-plus"></i> Save Employee
+        </button>
+        <button class="btn-secondary" onclick="loadEmployees()">
+            <i class="fa-solid fa-rotate"></i> Refresh List
+        </button>
+    </div>
+
+    <!-- Success Message Notification -->
+    <div id="successMsg">
+        <i class="fa-solid fa-check-circle"></i> Employee saved successfully! Click "Refresh List" to view.
+    </div>
+
+    <div class="table-wrapper">
+        <table id="empTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Salary</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="emptyMsg" class="empty-state">No employees loaded. Click Refresh.</div>
+    </div>
+</div>
+
+<script>
+// Load on startup
+document.addEventListener('DOMContentLoaded', loadEmployees);
+
+function clearErrors() {
+    document.querySelectorAll("input").forEach(i => i.classList.remove("error"));
+    document.querySelectorAll(".error-text").forEach(e => e.innerText = "");
+    document.getElementById("successMsg").style.display = "none";
+}
+
+function saveEmployee() {
+    let id = document.getElementById('empId').value.trim();
+    let name = document.getElementById('empName').value.trim();
+    let dept = document.getElementById('empDept').value.trim();
+    let salary = document.getElementById('empSalary').value.trim();
+
+    let employees = JSON.parse(localStorage.getItem("employees")) || [];
+
+    clearErrors();
+    let valid = true;
+
+    // Validate ID
+    if (!/^[0-9]+$/.test(id)) {
+        document.getElementById('empId').classList.add("error");
+        document.getElementById('errId').innerText = "ID must be a number.";
+        valid = false;
+    } else if (employees.some(e => e.id === id)) {
+        document.getElementById('empId').classList.add("error");
+        document.getElementById('errId').innerText = "This ID already exists.";
+        valid = false;
+    }
+
+    // Validate Name
+    if (!/^[A-Za-z ]+$/.test(name)) {
+        document.getElementById('empName').classList.add("error");
+        document.getElementById('errName').innerText = "Letters only.";
+        valid = false;
+    }
+
+    // Validate Dept
+    if (!/^[A-Za-z ]+$/.test(dept)) {
+        document.getElementById('empDept').classList.add("error");
+        document.getElementById('errDept').innerText = "Letters only.";
+        valid = false;
+    }
+
+    // Validate Salary
+    if (!/^[0-9]+$/.test(salary)) {
+        document.getElementById('empSalary').classList.add("error");
+        document.getElementById('errSalary').innerText = "Numbers only.";
+        valid = false;
+    }
+
+    if (!valid) return;
+
+    // Save data to storage
+    employees.push({ id, name, dept, salary });
+    localStorage.setItem("employees", JSON.stringify(employees));
+
+    // Clear form fields
+    document.getElementById('empId').value = "";
+    document.getElementById('empName').value = "";
+    document.getElementById('empDept').value = "";
+    document.getElementById('empSalary').value = "";
+
+    // Show Success Message
+    let msg = document.getElementById("successMsg");
+    msg.style.display = "block";
+    
+    // NOTE: We intentionally DO NOT call loadEmployees() here.
+    // The user must click "Refresh List" manually.
+    
+    // Hide success message after 4 seconds
+    setTimeout(() => { msg.style.display = "none"; }, 4000);
+}
+
+function loadEmployees() {
+    // Clear previous success messages if any
+    document.getElementById("successMsg").style.display = "none";
+
+    let employees = JSON.parse(localStorage.getItem("employees")) || [];
+    let tableBody = document.querySelector("#empTable tbody");
+    let emptyMsg = document.getElementById("emptyMsg");
+
+    tableBody.innerHTML = "";
+
+    if (employees.length === 0) {
+        emptyMsg.style.display = "block";
+        emptyMsg.innerText = "No records found.";
+    } else {
+        emptyMsg.style.display = "none";
+        employees.forEach(emp => {
+            let row = `
+                <tr>
+                    <td>#${emp.id}</td>
+                    <td><strong>${emp.name}</strong></td>
+                    <td>${emp.dept}</td>
+                    <td>₹ ${parseInt(emp.salary).toLocaleString('en-IN')}</td> 
+                </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+}
+</script>
+
+</body>
+</html>

@@ -26,12 +26,12 @@ This system allows you to manage employee records through a simple web interface
 
 ```
 employee-management/
-├── index.html           # Frontend HTML file and CSS styling
-├── script.js              # Frontend JavaScript
-├── lambda/             # AWS Lambda functions
-│   ├── get_employees.py    # GET endpoint handler
-│   └── post_employee.py    # POST endpoint handler
-└── README.md           # Project documentation
+├── index.html                  # Frontend HTML file and CSS styling
+├── script.js                   # Frontend JavaScript
+├── lambda/                     # AWS Lambda functions
+│   ├── get_employees.py        # GET endpoint handler
+│   └── post_employee.py        # POST endpoint handler
+└── README.md                   # Project documentation
 ```
 
 ## Setup Instructions
